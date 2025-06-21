@@ -114,7 +114,7 @@ const booksCtrl = {
             if (!Book) {
                 return res.status(404).json({ msg: "book not found" })
             }
-            await client.user.delete({
+            await client.book.delete({
                 where: { id }
             })
             return res.status(200).json({ msg: "Book deleted successfuly" })

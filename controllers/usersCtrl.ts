@@ -3,7 +3,10 @@ import { Request, Response } from "express"
 import { PrismaClient } from "../generated/prisma"
 import { user } from "../generated/prisma"
 import bcrypt from "bcrypt"
+// import jwt from "jsonwebtoken";
+
 const client = new PrismaClient()
+// const JWT_SECRET = process.env.JWT_SECRET || "secret";
 
 
 const usersCtrl = {
@@ -68,6 +71,39 @@ const usersCtrl = {
             }
         }
     },
+    // connectUser: async (req: Request, res: Response)=>{
+    //     const { email, motDePasse } = req.body;
+
+    // if (!email || !motDePasse) {
+    //   return res.status(400).json({ msg: "Veuillez remplir tous les champs" });
+    // }
+
+    // try {
+    //   const user = await client.user.findUnique({ where: { email } });
+    //   if (!user) {
+    //     return res.status(404).json({ msg: "User not found" });
+    //   }
+
+    //   const isGoodPassword = await bcrypt.compare(motDePasse, user.motDePasse);
+    //   if (!isGoodPassword) {
+    //     return res.status(401).json({ msg: "Mot de passe incorrect" });
+    //   }
+
+    //   //  Génération du token JWT
+    //   const token = jwt.sign(
+    //     { id: user.id, email: user.email },
+    //     JWT_SECRET,
+    //     { expiresIn: "1d" }
+    //   );
+
+    //   return res.status(200).json({ msg: "Connection successful", token });
+    // } catch (error) {
+    //   console.error("Erreur lors de la connexion :", error);
+    //   return res.status(500).json({ msg: "Error server" });
+    // }
+
+    // },
+
 
     updateUser: async (req: Request, res: Response) => {
         const { id } = req.params;

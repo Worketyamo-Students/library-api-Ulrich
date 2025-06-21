@@ -15,7 +15,7 @@ const port= process.env.PORT;
 
 app.use('/users', usersRoute)
 app.use('/books', booksRoute)
-app.use('loans', loansRoute)
+app.use('/loans', loansRoute)
 
 
 app.listen(port, ()=>{

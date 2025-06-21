@@ -23,6 +23,7 @@ model user {
 
   loan       loan[]
   notifications notifications[]
+  reservation   Reservation[]
 }
 
 model book {
@@ -35,7 +36,8 @@ model book {
   etat        String @default("disponible")
 
   loan        loan[]
-  notifications notifications[]
+  notification notifications[]
+  reservation   Reservation[]
 }
 
 model loan {
@@ -55,4 +57,12 @@ model notifications {
   user       user   @relation(fields: [userID], references: [id])
   book       book   @relation(fields: [bookID], references: [id])
   message    String
+}
+model Reservation {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  bookID    String   @db.ObjectId
+  userID    String   @db.ObjectId
+  date      DateTime @default(now())
+  book      book     @relation(fields: [bookID], references: [id])
+  user      user     @relation(fields: [userID], references: [id])
 }

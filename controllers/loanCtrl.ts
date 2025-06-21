@@ -1,8 +1,33 @@
 import { Request, Response } from "express"
 import { PrismaClient } from "../generated/prisma"
+import nodemailer from "nodemailer"
 import { loan } from "../generated/prisma"
 
 const client = new PrismaClient()
+
+// Configuration du transporteur email
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+})
+// Fonction pour envoyer notification
+async function sendNot(userEmail: string, bookTitle: string) {
+    try {
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: userEmail,
+            subject: 'Livre disponible - Bibliothèque',
+            text: `Bonjour,\n\nLe livre "${bookTitle}" que vous avez réservé est maintenant disponible.\nVeuillez passer à la bibliothèque pour l'emprunter.\n\nCordialement,\nL'équipe de la bibliothèque`
+        })
+        console.log(`Email envoyé à ${userEmail}`)
+    } catch (error) {
+        console.error('Erreur lors de l\'envoi de l\'email:', error)
+    }
+}
+
 
 const loanCtrl = {
     createLoan: async (req: Request, res: Response) => {
@@ -61,10 +86,16 @@ const loanCtrl = {
             if (!findLoan) {
                 return res.status(404).json({ msg: "Loan not found" })
             }
-            await client.book.update({
+            const updateBook = await client.book.update({
                 where: { id: findLoan.bookID },
                 data: {
                     etat: "disponible"
+                },
+                include: {
+                    reservation: {
+                        include: { user: true },
+                        orderBy: { date: 'asc' }
+                    }
                 }
             })
             const newLoan = await client.loan.update({
@@ -73,7 +104,17 @@ const loanCtrl = {
                     dateBack: new Date()
                 }
             })
-            //Il manque les notifications
+            //envoie les notifications au 1er reservé
+            if (updateBook.reservation.length > 0) {
+                const firstReservation = updateBook.reservation[0]?.user
+                if (!firstReservation) {
+                    return console.log("aucune reservation pour ce livre");
+
+                }
+
+                await sendNot(firstReservation.email, updateBook.titre)
+            }
+
             return res.status(200).send({
                 msg: "book returned successfuly",
                 return: newLoan
