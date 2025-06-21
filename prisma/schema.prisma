@@ -17,6 +17,7 @@ datasource db {
 
 model user {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  nom        String
   email      String   @unique
   motDePasse String   @unique
 
@@ -31,6 +32,7 @@ model book {
   description String
   anneePub    String
   ISBN        String
+  etat        String @default("disponible")
 
   loan        loan[]
   notifications notifications[]
@@ -40,8 +42,8 @@ model loan {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId 
   bookID     String   @db.ObjectId
   userID     String   @db.ObjectId
-  dateLoan   DateTime
-  dateBack   DateTime
+  dateLoan   DateTime @default(now())
+  dateBack   DateTime?
   user       user   @relation(fields: [userID], references: [id])
   book       book   @relation(fields: [bookID], references: [id])
 }

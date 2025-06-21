@@ -24,7 +24,7 @@ const booksCtrl = {
 
         try {
             if (!id) {
-                return res.status(401).json({ msg: "No ID provided" });
+                return res.status(400).json({ msg: "No ID provided" });
             }
             const Book = await client.book.findUnique({
                 where: { id }
@@ -106,7 +106,7 @@ const booksCtrl = {
         const { id } = req.params
         try {
             if (!id) {
-                return res.status(401).json({ msg: "No ID provided" });
+                return res.status(400).json({ msg: "No ID provided" });
             }
             const Book = await client.book.findUnique({
                 where: { id }

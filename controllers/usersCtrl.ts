@@ -5,7 +5,6 @@ import { user } from "../generated/prisma"
 import bcrypt from "bcrypt"
 const client = new PrismaClient()
 
-//tu as oublié les noms des users cretin
 
 const usersCtrl = {
 
@@ -40,9 +39,9 @@ const usersCtrl = {
     },
 
     createUser: async (req: Request, res: Response) => {
-        const { email, motDePasse }: user = req.body
+        const { nom, email, motDePasse }: user = req.body
 
-        if (!email || !motDePasse) {
+        if (!nom || !email || !motDePasse) {
             return res.status(400).json({ msg: "Veillez remplir tous les champs" })
         } else {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/ //verification regex
@@ -53,13 +52,14 @@ const usersCtrl = {
                 const motDePasseCrypte = await bcrypt.hash(motDePasse, 10)//hashage du mot de passe
                 const User = await client.user.create({
                 data: {
+                    nom,
                     email,
                     motDePasse: motDePasseCrypte
                 }
             })
 
-            return res.status(200).send({
-                msg: `User created successfuly with email: ${User.email}`,
+            return res.status(201).send({
+                msg: `User ${User.nom} created successfuly`,
 
             })
             }catch(error){
@@ -71,7 +71,7 @@ const usersCtrl = {
 
     updateUser: async (req: Request, res: Response) => {
         const { id } = req.params;
-        const { email, motDePasse }: user = req.body;
+        const { nom, email, motDePasse }: user = req.body;
 
         if (!id) {
             return res.status(400).json({ msg: "No ID provided" });
@@ -93,6 +93,7 @@ const usersCtrl = {
             const updatedUser = await client.user.update({
                 where: { id },
                 data: {
+                    nom,
                     email,
                     motDePasse: motDePasseCrypte
                 },
