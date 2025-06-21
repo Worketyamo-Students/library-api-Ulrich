@@ -5,6 +5,8 @@ import { user } from "../generated/prisma"
 import bcrypt from "bcrypt"
 const client = new PrismaClient()
 
+//tu as oublié les noms des users cretin
+
 const usersCtrl = {
 
     getUserById: async (req: Request, res: Response) => {
